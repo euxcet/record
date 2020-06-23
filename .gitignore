@@ -5,3 +5,4 @@ __pycache__/
 2.py
 data/
 *.wav
+.DS_Store
