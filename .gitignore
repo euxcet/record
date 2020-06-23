@@ -1,1 +1,7 @@
 node_modules/
+*.avi
+__pycache__/
+1.py
+2.py
+data/
+*.wav

@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main" @contextmenu.prevent="">
     <h1>{{title}}</h1>
     <div class="login-form-container">
       <el-form :model="login">
@@ -21,16 +21,6 @@
           <el-radio class="login-radio" v-model="login.is_right" label=false>左手</el-radio>
         </div>
         <div class="login-form-row">
-          <label class="login-form-label">手机材质</label>
-          <el-radio class="login-radio" v-model="login.is_metal" label=true>金属</el-radio>
-          <el-radio class="login-radio" v-model="login.is_metal" label=false>塑料</el-radio>
-        </div>
-        <div class="login-form-row">
-          <label class="login-form-label">手机是否有壳</label>
-          <el-radio class="login-radio" v-model="login.has_case" label=true>有</el-radio>
-          <el-radio class="login-radio" v-model="login.has_case" label=false>无</el-radio>
-        </div>
-        <div class="login-form-row">
           <el-button class="login-form-button" size="small" type="primary" @click="submit">OK</el-button>
         </div>
       </el-form>
@@ -50,9 +40,7 @@ export default {
         name: '',
         sid: 0,
         age: 20,
-        is_right: 'true',
-        is_metal: 'true',
-        has_case: 'true'
+        is_right: 'true'
       }
     }
   },
