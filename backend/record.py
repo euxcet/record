@@ -12,7 +12,7 @@ class AudioRecorder:
 	def __init__(self):
 		self.FORMAT = pyaudio.paInt16
 		self.CHANNELS = 1
-		self.SAMPLING_RATE = 32000
+		self.SAMPLING_RATE = 44100
 		self.CHUNK = 1024
 		self.audio = pyaudio.PyAudio()
 		self.stream = self.audio.open(
