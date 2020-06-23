@@ -6,7 +6,7 @@
       <div class="record-row">
         <el-button class="record-button" size="small" type="primary" @click="getTask">{{button}}</el-button>
       </div>
-      <img class="cross" :src="cross" :height=cross_height :style="{'top':position.x,'left':position.y}">
+      <img class="cross" :src="cross" :height=cross_height :style="{'top':position.y,'left':position.x}">
     </div>
 </template>
 <script>
@@ -15,8 +15,8 @@ export default {
   name: 'Record',
   data () {
     return {
-      begin_url: 'http://127.0.0.1:5000/begin',
-      end_url: 'http://127.0.0.1:5000/end',
+      begin_url: `${window.location.protocol}//${window.location.hostname}:5000/begin`,
+      end_url: `${window.location.protocol}//${window.location.hostname}:5000/end`,
       button: '录制',
       title: '',
       message: '',

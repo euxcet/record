@@ -35,7 +35,7 @@ export default {
   data () {
     return {
       title: '数据录入系统',
-      url: 'http://127.0.0.1:5000/login',
+      url: `${window.location.protocol}//${window.location.hostname}:5000/login`,
       login: {
         name: '',
         sid: 0,
