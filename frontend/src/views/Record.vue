@@ -2,7 +2,7 @@
     <div class="main" @contextmenu.prevent="">
       <div v-html="title" class="record-title"></div>
       <div v-html="message" class="record-message"></div>
-      <span class="record-remain">{{count}}</span>
+      <!--span class="record-remain">{{count}}</span-->
       <div class="record-row">
         <el-button class="record-button" size="small" type="primary" @click="getTask">{{button}}</el-button>
       </div>
@@ -23,10 +23,12 @@ export default {
       query: {
         'stage': 0,
         'task': 0,
-        'count': 1
+        'count': 1,
+        'first': 1
       },
       count: '',
       cross_height: 150,
+      totalTime: 30,
       position: {
         'x': '-200px',
         'y': '-200px'
@@ -35,7 +37,17 @@ export default {
     }
   },
   mounted () {
-    // this.getTask()
+    if (typeof this.$route.query.stage === 'undefined') {
+      this.query.stage = 0
+      this.query.task = 0
+      this.query.count = 1
+      this.query.first = 1
+    } else {
+      this.query.stage = this.$route.query.stage
+      this.query.task = this.$route.query.task
+      this.query.count = 0
+      this.query.first = 1
+    }
   },
   methods: {
     getTask () {
@@ -46,7 +58,17 @@ export default {
             'Content-Type': 'application/json'
           }
         }).then(response => {
-          this.button = '结束'
+          this.totalTime = response.data.time
+          this.button = this.totalTime + 's'
+          let clock = window.setInterval(() => {
+            this.totalTime--
+            this.button = this.totalTime + 's'
+            if (this.totalTime < 0) {
+              window.clearInterval(clock)
+              this.totalTime = 30
+              this.button = '结束'
+            }
+          }, 1000)
         })
       } else if (this.button === '结束' || this.button === '录制') {
         axios.post(this.end_url, this.query, {
@@ -63,6 +85,7 @@ export default {
           this.query.stage = response.data.stage
           this.query.task = response.data.task
           this.query.count = response.data.count
+          this.query.first = 1
           this.count = '剩余次数：' + response.data.remain.toString()
           this.title = response.data.title
           this.message = response.data.message

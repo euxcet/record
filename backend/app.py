@@ -22,12 +22,10 @@ person = {
 
 vr = None
 vrt = None
-ar = None
-art = None
 cx = 0
 cy = 0
-xrang = 1280
-yrang = 800
+width = 1600
+height = 800
 brightness = 0
 contrast = 0
 saturation = 0
@@ -40,11 +38,11 @@ temperature = 0
 sharpness = 0
 
 def start_record(stage, task, count):
+	global width
+	global height
 	global person
 	global vr
 	global vrt
-	global ar
-	global art
 	global cx
 	global cy
 	global brightness
@@ -64,16 +62,11 @@ def start_record(stage, task, count):
 		pass
 
 	video_path = os.path.join(dir_name, "video.avi")
-	audio_path = os.path.join(dir_name, "audio.wav")
 	position_path = os.path.join(dir_name, "position.txt")
 
-	vr = record.VideoRecorder(brightness, contrast, saturation, hue, gain, exposure, gamma, backlight, temperature, sharpness)
+	vr = record.VideoRecorder(width, height, brightness, contrast, saturation, hue, gain, exposure, gamma, backlight, temperature, sharpness)
 	vrt = threading.Thread(target = vr.run, args=(video_path,))
 	vrt.start()
-
-	ar = record.AudioRecorder()
-	art = threading.Thread(target = ar.run, args=(audio_path,))
-	art.start()
 
 	f = open(position_path, "w")
 	f.write(str(cx) + " " + str(cy))
@@ -81,13 +74,8 @@ def start_record(stage, task, count):
 def stop_record(stage, task, count):
 	global vr
 	global vrt
-	global ar
-	global art
 	vr.terminate()
-	ar.terminate()
-
 	vrt.join()
-	art.join()
 
 
 def load_pipeline():
@@ -99,15 +87,16 @@ def load_pipeline():
 			'stage': int(segs[0]),
 			'task': int(segs[1]),
 			'count': int(segs[2]),
-			'title': segs[3],
-			'message': segs[4]
+			'time': int(segs[3]),
+			'title': segs[4],
+			'message': segs[5]
 		})
 
 def generate_coord():
-	global xrang
-	global yrang
-	x = random.randint(1, xrang - 300)
-	y = random.randint(1, yrang - 300)
+	global width
+	global height
+	x = random.randint(1, width - 300)
+	y = random.randint(1, height - 300)
 	return x, y
 
 def get_next_task(stage, task, count):
@@ -136,6 +125,12 @@ def get_next_task(stage, task, count):
 				return res
 	return {}
 
+def get_time(stage, task):
+	for i in range(len(pipeline)):
+		if pipeline[i]['stage'] == stage and pipeline[i]['task'] == task:
+			return pipeline[i]['time']
+	return 30
+
 @app.route('/login', methods = ['POST'])
 def login():
 	global person
@@ -159,7 +154,7 @@ def begin():
 	print('begin', stage, task, count)
 	if stage > 0:
 		start_record(stage, task, count)
-	return jsonify([])
+	return jsonify({'time': get_time(stage, task)})
 
 @app.route('/end', methods = ['POST'])
 def end():
@@ -168,8 +163,10 @@ def end():
 	stage = int(request.json['stage'])
 	task = int(request.json['task'])
 	count = int(request.json['count'])
+	first = int(request.json['first'])
+	print(first)
 	print('end', stage, task, count)
-	if stage > 0:
+	if first == 0:
 		stop_record(stage, task, count)
 	result = get_next_task(stage, task, count)
 	cx = result['x']
@@ -179,8 +176,8 @@ def end():
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--width', '-w')
-	parser.add_argument('--height', '-e')
+	parser.add_argument('--width', '-w', default=1280)
+	parser.add_argument('--height', '-e', default=1024)
 	parser.add_argument('--brightness', default=29)
 	parser.add_argument('--contrast', default=40)
 	parser.add_argument('--saturation', default=30)
@@ -193,8 +190,8 @@ if __name__ == '__main__':
 	parser.add_argument('--sharpness', default=2)
 
 	args = parser.parse_args()
-	xrang = int(args.width)
-	yrang = int(args.height)
+	width = int(args.width)
+	height = int(args.height)
 	brightness = int(args.brightness)
 	contrast = int(args.contrast)
 	saturation = int(args.saturation)

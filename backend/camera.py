@@ -6,11 +6,11 @@ def decode_fourcc(v):
   return "".join([chr((v >> 8 * i) & 0xFF) for i in range(4)])
 
 class Camera:
-	def __init__(self, brightness, contrast, saturation, hue, gain, exposure, gamma, backlight, temperature, sharpness, src = 0):
+	def __init__(self, width, height, brightness, contrast, saturation, hue, gain, exposure, gamma, backlight, temperature, sharpness, src = 0):
 		print(brightness, contrast, saturation, hue, gain, exposure, gamma, backlight, temperature, sharpness)
 		self.stream = cv2.VideoCapture(src)
-		self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-		self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+		self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+		self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 		self.stream.set(cv2.CAP_PROP_BRIGHTNESS, brightness)
 		self.stream.set(cv2.CAP_PROP_CONTRAST, contrast)
 		self.stream.set(cv2.CAP_PROP_SATURATION, saturation)
